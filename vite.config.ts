@@ -30,7 +30,10 @@ export default defineConfig({
     outDir: path.resolve(__dirname, 'dist'),
     emptyOutDir: true,
     rollupOptions: {
-      input: path.resolve(__dirname, 'frontend/index.html'),
+      input: {
+        main: path.resolve(__dirname, 'frontend/index.html'),
+        login: path.resolve(__dirname, 'frontend/login.html')
+      }
     }
   }
 })
