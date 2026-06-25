@@ -1,10 +1,14 @@
-import mongoose from 'mongoose';
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db.js';
 
-const DyeingUnitSchema = new mongoose.Schema({
-  id: { type: String, required: true, unique: true },
-  name: String,
-  address: String,
-  timestamp: { type: Number, default: Date.now }
-}, { strict: false });
+const DyeingUnit = sequelize.define('DyeingUnit', {
+  id: { type: DataTypes.STRING, primaryKey: true, unique: true },
+  name: { type: DataTypes.STRING },
+  address: { type: DataTypes.STRING },
+  timestamp: { type: DataTypes.BIGINT, defaultValue: () => Date.now() }
+}, {
+  tableName: 'dyeing_unit',
+  timestamps: false
+});
 
-export default mongoose.model('DyeingUnit', DyeingUnitSchema);
+export default DyeingUnit;

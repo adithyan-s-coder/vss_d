@@ -1,8 +1,12 @@
-import mongoose from 'mongoose';
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db.js';
 
-const CounterSchema = new mongoose.Schema({
-  id: { type: String, required: true, unique: true },
-  seq: { type: Number, default: 0 }
+const Counter = sequelize.define('Counter', {
+  id: { type: DataTypes.STRING, primaryKey: true, unique: true },
+  seq: { type: DataTypes.INTEGER, defaultValue: 0 }
+}, {
+  tableName: 'counter',
+  timestamps: false
 });
 
-export default mongoose.model('Counter', CounterSchema);
+export default Counter;

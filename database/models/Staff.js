@@ -1,11 +1,15 @@
-import mongoose from 'mongoose';
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db.js';
 
-const StaffSchema = new mongoose.Schema({
-  id: { type: String, required: true, unique: true },
-  name: String,
-  role: String,
-  joinDate: String,
-  timestamp: { type: Number, default: Date.now }
-}, { strict: false });
+const Staff = sequelize.define('Staff', {
+  id: { type: DataTypes.STRING, primaryKey: true, unique: true },
+  name: { type: DataTypes.STRING },
+  role: { type: DataTypes.STRING },
+  joinDate: { type: DataTypes.STRING },
+  timestamp: { type: DataTypes.BIGINT, defaultValue: () => Date.now() }
+}, {
+  tableName: 'staff',
+  timestamps: false
+});
 
-export default mongoose.model('Staff', StaffSchema);
+export default Staff;

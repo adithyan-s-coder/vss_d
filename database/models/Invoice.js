@@ -1,13 +1,17 @@
-import mongoose from 'mongoose';
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db.js';
 
-const InvoiceSchema = new mongoose.Schema({
-  id: { type: String, required: true, unique: true },
-  invoiceNo: String,
-  date: String,
-  partyName: String,
-  totalAmount: Number,
-  items: Array,
-  timestamp: { type: Number, default: Date.now }
-}, { strict: false });
+const Invoice = sequelize.define('Invoice', {
+  id: { type: DataTypes.STRING, primaryKey: true, unique: true },
+  invoiceNo: { type: DataTypes.STRING },
+  date: { type: DataTypes.STRING },
+  partyName: { type: DataTypes.STRING },
+  totalAmount: { type: DataTypes.FLOAT },
+  items: { type: DataTypes.JSON },
+  timestamp: { type: DataTypes.BIGINT, defaultValue: () => Date.now() }
+}, {
+  tableName: 'invoice',
+  timestamps: false
+});
 
-export default mongoose.model('Invoice', InvoiceSchema);
+export default Invoice;

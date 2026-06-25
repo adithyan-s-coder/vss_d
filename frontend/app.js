@@ -1909,16 +1909,33 @@ function saveParties(parties) {
   localStorage.setItem(PARTY_STORAGE_KEY, JSON.stringify(parties));
 }
 
+function onPartyNameChange() {
+  const val = document.getElementById('partyFormName').value.trim().toLowerCase();
+  const matched = getParties().find(p => (p.name || '').trim().toLowerCase() === val);
+  if (matched) {
+    document.getElementById('partyEditId').value = matched.id;
+    document.getElementById('partyFormPhone').value = matched.phone || '';
+    document.getElementById('partyFormGstin').value = matched.gstin || '';
+    document.getElementById('partyFormAddress').value = matched.address || '';
+    document.getElementById('partyFormTitle').textContent = 'EDIT PARTY';
+  } else {
+    document.getElementById('partyEditId').value = '';
+    document.getElementById('partyFormTitle').textContent = 'ADD NEW PARTY';
+  }
+}
+
 function initPartyMaster() {
   const btnNew = document.getElementById('btnNewParty');
   const btnCancel = document.getElementById('btnPartyCancel');
   const btnSave = document.getElementById('btnPartySave');
   const searchInput = document.getElementById('partySearch');
+  const partyFormName = document.getElementById('partyFormName');
 
   if (btnNew) btnNew.addEventListener('click', () => showPartyForm(true));
   if (btnCancel) btnCancel.addEventListener('click', showPartyList);
   if (btnSave) btnSave.addEventListener('click', saveParty);
   if (searchInput) searchInput.addEventListener('input', renderPartyTable);
+  if (partyFormName) partyFormName.addEventListener('input', onPartyNameChange);
 
   // Seed initial parties if missing
   const newParties = [
@@ -2078,13 +2095,18 @@ function initPartyMaster() {
   if (added) {
     saveParties(currentParties);
     // Optional: bulk sync currentParties to Firestore if needed
-    currentParties.forEach(p => syncToMongoDB('party_master', p));
+    Promise.all(currentParties.map(p => syncToMongoDB('party_master', p))).then(() => {
+      loadFromMongoDB('party_master', PARTY_STORAGE_KEY).then(() => {
+        renderPartyTable();
+        updatePartyDropdowns();
+      });
+    });
+  } else {
+    loadFromMongoDB('party_master', PARTY_STORAGE_KEY).then(() => {
+      renderPartyTable();
+      updatePartyDropdowns();
+    });
   }
-
-  loadFromMongoDB('party_master', PARTY_STORAGE_KEY).then(() => {
-    renderPartyTable();
-    updatePartyDropdowns();
-  });
 }
 
 function showPartyList() {
@@ -2237,6 +2259,12 @@ function setupCustomDropdown(wrapperId, searchId, hiddenId, optionsContainerId, 
 function updatePartyDropdowns() {
   const parties = getParties();
   const items = parties.map(p => ({ value: p.id, label: p.name }));
+
+  // Populate datalist for auto-fill in Add Party form
+  const datalist = document.getElementById('partyNamesList');
+  if (datalist) {
+    datalist.innerHTML = parties.map(p => `<option value="${p.name}">`).join('');
+  }
 
   // Setup or refresh all party dropdowns
   ['partyName', 'delPartyName', 'invPartyName'].forEach(hiddenId => {
@@ -2943,3 +2971,44 @@ window.deleteParty = deleteParty;
 window.editDyeingUnit = editDyeingUnit;
 window.deleteDyeingUnit = deleteDyeingUnit;
 
+// User dropdown and logout logic
+document.addEventListener('DOMContentLoaded', () => {
+    const userAvatar = document.getElementById('userAvatar');
+    const userDropdown = document.getElementById('userDropdown');
+    const btnLogout = document.getElementById('btnLogout');
+
+    if (userAvatar && userDropdown && btnLogout) {
+        userAvatar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!userDropdown.contains(e.target) && e.target !== userAvatar) {
+                userDropdown.classList.remove('show');
+            }
+        });
+
+        btnLogout.addEventListener('click', () => {
+            localStorage.removeItem('vss_logged_in');
+            window.location.href = 'login.html';
+        });
+    }
+});
+
+window.showPartyForm = showPartyForm;
+window.saveParty = saveParty;
+window.showPartyList = showPartyList;
+
+window.onPartyNameChange = onPartyNameChange;
+
+window.showDeliveryForm = showDeliveryForm;
+window.saveDelivery = saveDelivery;
+window.showDeliveryList = showDeliveryList;
+
+window.printDeliveryChallan = printDeliveryChallan;
+
+window.showInvoiceForm = showInvoiceForm;
+window.saveInvoice = saveInvoice;
+window.showInvoiceList = showInvoiceList;
+window.printInvoice = printInvoice;

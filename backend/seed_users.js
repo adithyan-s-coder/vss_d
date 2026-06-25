@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import User from '../database/models/User.js';
+import { sequelize } from '../database/db.js';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -9,12 +9,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/vss_dc';
-
 async function seed() {
     try {
-        await mongoose.connect(MONGO_URI);
-        console.log('Connected to MongoDB');
+        await sequelize.authenticate();
+        console.log('Connected to MySQL');
+
+        // Ensure table exists
+        await User.sync();
 
         const users = ['kannan', 'vikash'];
         const password = 'admin';
@@ -22,10 +23,9 @@ async function seed() {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         for (const username of users) {
-            const existing = await User.findOne({ username });
+            const existing = await User.findOne({ where: { username } });
             if (!existing) {
-                const newUser = new User({ username, password: hashedPassword });
-                await newUser.save();
+                await User.create({ username, password: hashedPassword });
                 console.log(`User ${username} created`);
             } else {
                 console.log(`User ${username} already exists`);

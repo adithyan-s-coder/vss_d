@@ -1,10 +1,14 @@
-import mongoose from 'mongoose';
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db.js';
 
-const AttendanceSchema = new mongoose.Schema({
-  id: { type: String, required: true, unique: true }, // e.g., "2024-03-24"
-  date: String,
-  records: Array,
-  timestamp: { type: Number, default: Date.now }
-}, { strict: false });
+const Attendance = sequelize.define('Attendance', {
+  id: { type: DataTypes.STRING, primaryKey: true, unique: true },
+  date: { type: DataTypes.STRING },
+  records: { type: DataTypes.JSON },
+  timestamp: { type: DataTypes.BIGINT, defaultValue: () => Date.now() }
+}, {
+  tableName: 'attendance',
+  timestamps: false
+});
 
-export default mongoose.model('Attendance', AttendanceSchema);
+export default Attendance;

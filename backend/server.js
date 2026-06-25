@@ -1,29 +1,29 @@
-import mongoose from 'mongoose';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
-import User from '../database/models/User.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { sequelize } from '../database/db.js';
+import User from '../database/models/User.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Connect to MongoDB
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/vss_dc';
-mongoose.connect(MONGO_URI, {
-    serverSelectionTimeoutMS: 5000,
-    family: 4
-})
-    .then(() => console.log('✅ Connected to MongoDB (' + MONGO_URI + ')'))
-    .catch(err => console.error('MongoDB connection error:', err));
+// Connect to MySQL
+sequelize.authenticate()
+    .then(() => {
+        console.log('✅ Connected to MySQL database');
+        // Sync models (creates tables if they don't exist)
+        return sequelize.sync({ alter: true });
+    })
+    .then(() => console.log('✅ Database models synchronized'))
+    .catch(err => console.error('MySQL connection error:', err));
 
 // Test Home Route
 app.get('/', (req, res) => {
@@ -36,7 +36,7 @@ app.post('/api/login', async (req, res) => {
         const { username, password } = req.body;
 
         // Check if user exists
-        const user = await User.findOne({ username });
+        const user = await User.findOne({ where: { username } });
         if (!user) {
             return res.status(401).json({ error: 'Invalid username or password' });
         }
@@ -85,7 +85,7 @@ app.get('/api/:collection', async (req, res) => {
         const Model = models[collection];
         if (!Model) return res.status(404).json({ error: 'Collection not found' });
 
-        const data = await Model.find({});
+        const data = await Model.findAll();
         res.json(data);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -101,12 +101,8 @@ app.post('/api/:collection', async (req, res) => {
         const data = req.body;
         if (!data.id) return res.status(400).json({ error: 'ID is required' });
 
-        // Upsert based on custom 'id' field
-        const updatedDoc = await Model.findOneAndUpdate(
-            { id: String(data.id) },
-            data,
-            { upsert: true, new: true, setDefaultsOnInsert: true }
-        );
+        // Upsert
+        const [updatedDoc] = await Model.upsert(data);
 
         res.json(updatedDoc);
     } catch (error) {
@@ -120,7 +116,7 @@ app.delete('/api/:collection/:id', async (req, res) => {
         const Model = models[collection];
         if (!Model) return res.status(404).json({ error: 'Collection not found' });
 
-        await Model.findOneAndDelete({ id: String(id) });
+        await Model.destroy({ where: { id: String(id) } });
         res.json({ message: 'Deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -134,7 +130,7 @@ app.post('/api/register', async (req, res) => {
         const { username, password } = req.body;
 
         // See if any user already exists
-        const existingUser = await User.findOne({ username });
+        const existingUser = await User.findOne({ where: { username } });
         if (existingUser) {
             return res.status(400).json({ error: 'Username already exists' });
         }
@@ -144,8 +140,7 @@ app.post('/api/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // Save
-        const newUser = new User({ username, password: hashedPassword });
-        await newUser.save();
+        const newUser = await User.create({ username, password: hashedPassword });
 
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
