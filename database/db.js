@@ -3,6 +3,10 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import mysql2 from 'mysql2';
+import dns from 'dns';
+
+// Force Vercel's Node environment to resolve IPv4 addresses to fix ENOTFOUND
+dns.setDefaultResultOrder('ipv4first');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
