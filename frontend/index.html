@@ -1300,12 +1300,22 @@
             <div class="form-actions" style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb; display: flex; gap: 16px;">
               <button type="button" class="btn-action" id="btnSettingSave"
                 style="background: var(--accent-blue); color: white; border: none;">Save Settings</button>
-              <button type="button" class="btn-action nav-item" data-page="party-master"
-                style="background: #8b5cf6; color: white; border: none;">Open Party Master</button>
-              <button type="button" class="btn-action nav-item" data-page="dyeing-master"
-                style="background: #ec4899; color: white; border: none;">Open Dyeing Master</button>
               <button type="button" class="btn-action" id="btnSyncFirebase" onclick="syncAllToFirebase()"
                 style="background: #10b981; color: white; border: none;">Sync All to Firebase</button>
+            </div>
+
+            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+              <h3 style="font-size: 1.1rem; font-weight: 600; margin: 0 0 4px 0; color: #111827;">Party Master Settings</h3>
+              <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0 0 16px 0;">Manage all your customer and party master details here.</p>
+              <button type="button" class="btn-action nav-item" data-page="party-master"
+                style="background: #f59e0b; color: white; border: none;">Go to Party Master</button>
+            </div>
+
+            <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+              <h3 style="font-size: 1.1rem; font-weight: 600; margin: 0 0 4px 0; color: #111827;">Dyeing Master Settings</h3>
+              <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0 0 16px 0;">Manage all your dyeing units and related details here.</p>
+              <button type="button" class="btn-action nav-item" data-page="dyeing-master"
+                style="background: #ec4899; color: white; border: none;">Go to Dyeing Master</button>
             </div>
           </div>
         </section>
