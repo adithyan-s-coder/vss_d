@@ -8,7 +8,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '../backend/.env') });
 
-const MYSQL_URI = process.env.MYSQL_URI || 'mysql://root@localhost:3306/vss_dc';
+let MYSQL_URI = process.env.MYSQL_URI || 'mysql://root@localhost:3306/vss_dc';
+MYSQL_URI = MYSQL_URI.trim();
 
 const sequelizeOptions = {
     dialect: 'mysql',
