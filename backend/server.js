@@ -30,6 +30,18 @@ app.get('/', (req, res) => {
 // Login Endpoint
 app.post('/api/login', async (req, res) => {
     try {
+        // Ensure table exists and seed default users if necessary
+        await User.sync();
+        const count = await User.count();
+        if (count === 0) {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash('admin', salt);
+            await User.bulkCreate([
+                { username: 'kannan', password: hashedPassword },
+                { username: 'vikash', password: hashedPassword }
+            ]);
+            console.log('Seeded default users (kannan, vikash)');
+        }
         const { username, password } = req.body;
 
         // Check if user exists
