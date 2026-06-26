@@ -10,6 +10,8 @@ dotenv.config({ path: path.join(__dirname, '../backend/.env') });
 
 let MYSQL_URI = process.env.MYSQL_URI || 'mysql://root@localhost:3306/vss_dc';
 MYSQL_URI = MYSQL_URI.trim();
+// Vercel DNS workaround: bypass DNS resolution for this specific Aiven host
+MYSQL_URI = MYSQL_URI.replace('mysql-1b61df45-adithyannn-573a.h.aivencloud.com', '143.110.246.40');
 
 const sequelizeOptions = {
     dialect: 'mysql',
