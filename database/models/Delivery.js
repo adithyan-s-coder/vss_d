@@ -9,6 +9,7 @@ const Delivery = sequelize.define('Delivery', {
   receivedChallanNo: { type: DataTypes.STRING },
   items: { type: DataTypes.JSON },
   totalWeight: { type: DataTypes.FLOAT },
+  data: { type: DataTypes.JSON },
   timestamp: { type: DataTypes.BIGINT, defaultValue: () => Date.now() }
 }, {
   tableName: 'delivery',

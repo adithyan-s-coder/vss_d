@@ -8,6 +8,7 @@ const Invoice = sequelize.define('Invoice', {
   partyName: { type: DataTypes.STRING },
   totalAmount: { type: DataTypes.FLOAT },
   items: { type: DataTypes.JSON },
+  data: { type: DataTypes.JSON },
   timestamp: { type: DataTypes.BIGINT, defaultValue: () => Date.now() }
 }, {
   tableName: 'invoice',

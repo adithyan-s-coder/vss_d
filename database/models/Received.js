@@ -10,6 +10,7 @@ const Received = sequelize.define('Received', {
   weight: { type: DataTypes.FLOAT },
   lotNo: { type: DataTypes.STRING },
   status: { type: DataTypes.STRING, defaultValue: 'Pending' },
+  data: { type: DataTypes.JSON },
   timestamp: { type: DataTypes.BIGINT, defaultValue: () => Date.now() }
 }, {
   tableName: 'received',

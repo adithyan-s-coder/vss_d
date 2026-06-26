@@ -9,6 +9,7 @@ const Party = sequelize.define('Party', {
   gstin: { type: DataTypes.STRING },
   gstNo: { type: DataTypes.STRING },
   date: { type: DataTypes.STRING },
+  data: { type: DataTypes.JSON },
   timestamp: { type: DataTypes.BIGINT, defaultValue: () => Date.now() }
 }, {
   tableName: 'party',

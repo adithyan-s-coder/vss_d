@@ -82,7 +82,9 @@ app.get('/api/:collection', async (req, res) => {
         const Model = models[collection];
         if (!Model) return res.status(404).json({ error: 'Collection not found' });
 
-        const data = await Model.findAll();
+        const rows = await Model.findAll();
+        // Fallback to relational columns if data is empty (for backward compatibility)
+        const data = rows.map(r => r.data ? r.data : r.toJSON());
         res.json(data);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -95,13 +97,14 @@ app.post('/api/:collection', async (req, res) => {
         const Model = models[collection];
         if (!Model) return res.status(404).json({ error: 'Collection not found' });
 
-        const data = req.body;
-        if (!data.id) return res.status(400).json({ error: 'ID is required' });
+        const payload = req.body;
+        if (!payload.id) return res.status(400).json({ error: 'ID is required' });
 
-        // Upsert
-        const [updatedDoc] = await Model.upsert(data);
+        // Upsert with data JSON column
+        const upsertData = { ...payload, data: payload };
+        await Model.upsert(upsertData);
 
-        res.json(updatedDoc);
+        res.json(payload);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

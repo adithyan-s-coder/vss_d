@@ -6,6 +6,7 @@ const Staff = sequelize.define('Staff', {
   name: { type: DataTypes.STRING },
   role: { type: DataTypes.STRING },
   joinDate: { type: DataTypes.STRING },
+  data: { type: DataTypes.JSON },
   timestamp: { type: DataTypes.BIGINT, defaultValue: () => Date.now() }
 }, {
   tableName: 'staff',

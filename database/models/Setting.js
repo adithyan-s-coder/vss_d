@@ -8,6 +8,7 @@ const Setting = sequelize.define('Setting', {
   phone: { type: DataTypes.STRING },
   email: { type: DataTypes.STRING },
   gstNo: { type: DataTypes.STRING },
+  data: { type: DataTypes.JSON },
   timestamp: { type: DataTypes.BIGINT, defaultValue: () => Date.now() }
 }, {
   tableName: 'setting',

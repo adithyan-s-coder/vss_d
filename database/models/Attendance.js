@@ -5,6 +5,7 @@ const Attendance = sequelize.define('Attendance', {
   id: { type: DataTypes.STRING, primaryKey: true, unique: true },
   date: { type: DataTypes.STRING },
   records: { type: DataTypes.JSON },
+  data: { type: DataTypes.JSON },
   timestamp: { type: DataTypes.BIGINT, defaultValue: () => Date.now() }
 }, {
   tableName: 'attendance',
